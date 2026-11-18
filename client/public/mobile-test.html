@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Teste de layout responsivo — Dominó Pro</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #0b0f0d;
+        color: #e9f4ef;
+        font-family: system-ui, sans-serif;
+        padding: 14px;
+        display: flex;
+        gap: 18px;
+        align-items: flex-start;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .device { text-align: center; }
+      .device h3 { margin: 0 0 8px; font-size: 13px; color: #93b6a7; font-weight: 600; }
+      iframe {
+        border: 3px solid #2a3a33;
+        border-radius: 26px;
+        background: #03130d;
+        box-shadow: 0 14px 44px rgba(0, 0, 0, 0.65);
+        display: block;
+      }
+      .bar { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+      .bar button {
+        background: #12352a;
+        color: #e9f4ef;
+        border: 1px solid #2a4a3d;
+        border-radius: 8px;
+        padding: 7px 13px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .bar button:hover { background: #1a4a3a; }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <button onclick="set('iPhone', 390, 844)">iPhone 390×844</button>
+      <button onclick="set('Android', 360, 740)">Android 360×740</button>
+      <button onclick="set('Celular pequeno', 320, 568)">320×568</button>
+      <button onclick="set('Tablet', 768, 1024)">Tablet 768</button>
+      <button onclick="set('Deitado', 740, 390)">Deitado 740×390</button>
+    </div>
+
+    <div class="device">
+      <h3 id="label">iPhone — 390×844</h3>
+      <iframe id="frame" src="/" width="390" height="844"></iframe>
+    </div>
+
+    <script>
+      function set(label, w, h) {
+        document.getElementById('frame').width = w;
+        document.getElementById('frame').height = h;
+        document.getElementById('label').textContent = `${label} — ${w}×${h}`;
+        // recarrega para as media queries reagirem limpas
+        document.getElementById('frame').src = '/';
+      }
+    </script>
+  </body>
+</html>

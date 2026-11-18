@@ -1,0 +1,33 @@
+{
+  "name": "domino-pro",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Plataforma profissional de dominó online com login, multiplayer e IA",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,client -c green,cyan \"npm run server\" \"npm run client\"",
+    "server": "node server/src/index.js",
+    "client": "vite client",
+    "build": "vite build client",
+    "start": "cross-env NODE_ENV=production node server/src/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "sharp": "^0.35.5",
+    "vite": "^6.0.7"
+  }
+}

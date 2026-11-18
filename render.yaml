@@ -1,0 +1,16 @@
+# Blueprint do Render — cria o serviço automaticamente ao conectar o repositório.
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: dominopro
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/online
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
