@@ -958,7 +958,22 @@ button, input { font-family: inherit; }
 .log li.log-draw { border-left-color: #58b7ff; }
 .log li.log-play { border-left-color: rgba(255, 255, 255, 0.3); }
 
-/* Barra de escolha de lado */
+/* Peça sendo arrastada */
+.drag-ghost {
+  position: fixed;
+  z-index: 90;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1.08);
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.6));
+  opacity: 0.95;
+}
+.table-dragging {
+  outline: 2px dashed rgba(242, 193, 78, 0.55);
+  outline-offset: 4px;
+  background: rgba(242, 193, 78, 0.04);
+  border-radius: 22px;
+  transition: background 0.15s, outline-color 0.15s;
+}
 .pending-bar {
   position: fixed;
   left: 50%;

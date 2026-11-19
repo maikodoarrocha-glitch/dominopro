@@ -18,6 +18,9 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
   const socketRef = useRef(getSocket());
   const tileRefs = useRef({});
   const handRef = useRef(null);
+  const dragRef = useRef(null);
+  const suppressClickRef = useRef(false);
+  const [drag, setDrag] = useState(null);
 
   const yourTurn = !!st && st.turn === st.youIndex && st.status === 'playing';
 
@@ -132,9 +135,54 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
     }
   }, [st?.chain?.length, st?.lastAction?.tileId]);
 
-  // (auto-scroll da mão desativado: a mão agora se adapta em várias linhas, sem rolagem)
-  // eslint-disable-next-line no-unused-vars
-  const _handAutoScrollDisabled = true;
+  // Arrastar peças da mão para a mesa (drag-and-drop) + toque
+  useEffect(() => {
+    const onMove = (e) => {
+      const d = dragRef.current;
+      if (!d) return;
+      const dx = e.clientX - d.startX;
+      const dy = e.clientY - d.startY;
+      if (Math.hypot(dx, dy) > 8) d.moved = true;
+      setDrag({ tileId: d.tileId, x: e.clientX, y: e.clientY });
+    };
+    const onUp = (e) => {
+      const d = dragRef.current;
+      if (!d) return;
+      const wasDrag = d.moved;
+      dragRef.current = null;
+      setDrag(null);
+      if (!wasDrag) return; // toque simples: deixa o onClick cuidar
+      suppressClickRef.current = true;
+      window.setTimeout(() => { suppressClickRef.current = false; }, 250);
+      const table = document.querySelector('.table');
+      const rect = table ? table.getBoundingClientRect() : null;
+      const overTable = rect && e.clientX >= rect.left && e.clientX <= rect.right &&
+        e.clientY >= rect.top && e.clientY <= rect.bottom;
+      if (!overTable) return; // soltou fora: cancela
+      const tile = st.you.hand.find((t) => t.id === d.tileId);
+      if (!tile) return;
+      const sides = st.legal[tile.id] || [];
+      if (sides.length === 0) {
+        toast('Essa peça não encaixa nas pontas agora.', 'warn');
+        sound.pass();
+        return;
+      }
+      if (st.chain.length === 0 || sides.length === 1) {
+        doPlay(tile.id, sides[0]);
+      } else {
+        setPending({ tileId: tile.id, sides });
+        sound.click();
+      }
+    };
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+    return () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+    };
+  }, [st, yourTurn]);
 
   const emit = (payload) => socketRef.current.emit('game:action', payload);
 
@@ -145,6 +193,7 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
   };
 
   const onHandTile = (tile) => {
+    if (suppressClickRef.current) return;
     if (!yourTurn) {
       toast(st?.turn === st?.youIndex ? 'A rodada acabou.' : 'Aguarde sua vez.', 'warn');
       return;
@@ -224,7 +273,7 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
           </div>
 
           {/* ---------- Mesa ---------- */}
-          <section className="table">
+          <section className={`table ${drag ? 'table-dragging' : ''}`}>
             <div className="table-frame">
               <div className="table-felt">
                 {st.chain.length === 0 ? (
@@ -283,7 +332,22 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
                     dir="v"
                     size="hand"
                     onClick={() => onHandTile(t)}
-                    title={playable ? 'Jogar' : 'Sem encaixe'}
+                    onPointerDown={(e) => {
+                      if (!yourTurn) return;
+                      const sides = st.legal[t.id] || [];
+                      if (sides.length === 0) return;
+                      dragRef.current = {
+                        tileId: t.id,
+                        startX: e.clientX,
+                        startY: e.clientY,
+                        moved: false,
+                      };
+                      setDrag({ tileId: t.id, x: e.clientX, y: e.clientY });
+                      try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+                    }}
+                    title={playable ? 'Jogar (arraste ou toque)' : 'Sem encaixe'}
+                    draggable={false}
+                    style={{ touchAction: 'none' }}
                   />
                 </div>
               );
@@ -349,7 +413,19 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
         </aside>
       </div>
 
-      {/* ---------- Escolha de lado ---------- */}
+      {/* ---------- Peça sendo arrastada ---------- */}
+      {drag && (() => {
+        const t = hand.find((x) => x.id === drag.tileId);
+        if (!t) return null;
+        return (
+          <div
+            className="drag-ghost"
+            style={{ left: drag.x, top: drag.y }}
+          >
+            <Tile a={t.a} b={t.b} dir="v" size="hand" />
+          </div>
+        );
+      })()}
       {pending && (
         <div className="pending-bar">
           <span>Jogar <b>{pending.tileId.replace('-', '–')}</b> em qual ponta?</span>
