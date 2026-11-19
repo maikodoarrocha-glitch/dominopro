@@ -82,8 +82,8 @@ button, input { font-family: inherit; }
 .tile-h { flex-direction: row; width: var(--tw); height: calc(var(--tw) / 2); }
 .tile-v { flex-direction: column; width: calc(var(--tw) / 2); height: var(--tw); }
 
-.tile-board { --tw: 64px; }
-.tile-hand  { --tw: 80px; }
+.tile-board { --tw: 74px; }
+.tile-hand  { --tw: 88px; }
 .tile-mini  { --tw: 42px; }
 
 .half {
@@ -803,7 +803,7 @@ button, input { font-family: inherit; }
 
 .table-felt {
   position: relative;
-  min-height: 178px;
+  min-height: 200px;
   border-radius: 14px;
   background:
     repeating-radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 7px),
@@ -817,16 +817,14 @@ button, input { font-family: inherit; }
   align-items: center;
   gap: 5px;
   padding: 18px 16px;
-  min-height: 178px;
+  min-height: 200px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(242, 193, 78, 0.5) transparent;
+  box-shadow: inset 28px 0 18px -18px rgba(7, 61, 42, 0.95), inset -28px 0 18px -18px rgba(7, 61, 42, 0.95);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.chain::-webkit-scrollbar { height: 8px; }
-.chain::-webkit-scrollbar-thumb { background: rgba(242, 193, 78, 0.4); border-radius: 4px; }
-.chain::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+.chain::-webkit-scrollbar { display: none; height: 0; }
 
 .chain-cell { flex: 0 0 auto; }
 .chain-cell-new { animation: tile-drop 0.38s cubic-bezier(0.2, 1.4, 0.4, 1); }
@@ -837,7 +835,7 @@ button, input { font-family: inherit; }
 }
 
 .chain-empty {
-  min-height: 178px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -873,11 +871,10 @@ button, input { font-family: inherit; }
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
   scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(242, 193, 78, 0.45) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.hand::-webkit-scrollbar { height: 8px; }
-.hand::-webkit-scrollbar-thumb { background: rgba(242, 193, 78, 0.4); border-radius: 4px; }
+.hand::-webkit-scrollbar { display: none; height: 0; }
 
 .hand-slot { margin: 0 auto; transition: transform 0.15s ease; }
 .hand-slot .tile { transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease; cursor: pointer; }
@@ -1026,7 +1023,7 @@ button, input { font-family: inherit; }
 
   .tile-board { --tw: 54px; }
   .tile-hand { --tw: 64px; }
-  .table-felt, .chain, .chain-empty { min-height: 148px; }
+  .table-felt, .chain, .chain-empty { min-height: 160px; }
   .hand { min-height: 92px; gap: 6px; padding-top: 12px; }
 
   .controls { gap: 9px; }
