@@ -132,17 +132,9 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
     }
   }, [st?.chain?.length, st?.lastAction?.tileId]);
 
-  // Na sua vez, traz a primeira peça jogável para a vista (sem precisar arrastar)
-  useEffect(() => {
-    if (!yourTurn || !handRef.current) return;
-    const t = window.setTimeout(() => {
-      const first = handRef.current?.querySelector('.hand-slot.playable .tile');
-      if (first && typeof first.scrollIntoView === 'function') {
-        first.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }
-    }, 120);
-    return () => window.clearTimeout(t);
-  }, [yourTurn, st?.you.hand.length]);
+  // (auto-scroll da mão desativado: a mão agora se adapta em várias linhas, sem rolagem)
+  // eslint-disable-next-line no-unused-vars
+  const _handAutoScrollDisabled = true;
 
   const emit = (payload) => socketRef.current.emit('game:action', payload);
 
