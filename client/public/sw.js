@@ -1,5 +1,5 @@
 /* Dominó Pro — Service Worker (PWA) */
-const CACHE = 'domino-pro-v1';
+const CACHE = 'domino-pro-v2';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

@@ -23,7 +23,8 @@
   font-synthesis: none;
 }
 
-* { box-sizing: border-box; }
+html { overflow-x: hidden; }
+.game, .game-layout, .game-main, .table { overflow-x: hidden; max-width: 100%; }
 
 html, body, #root {
   height: 100%;
