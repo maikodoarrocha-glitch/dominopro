@@ -864,18 +864,15 @@ button, input { font-family: inherit; }
 /* Sua mão */
 .hand {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
+  justify-content: center;
   gap: 8px;
-  overflow-x: auto;
-  padding: 16px 6px 8px;
-  min-height: 108px;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
+  overflow: visible;
+  padding: 12px 6px 8px;
+  min-height: 96px;
   scroll-behavior: smooth;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
-.hand::-webkit-scrollbar { display: none; height: 0; }
 
 .hand-slot { margin: 0 auto; transition: transform 0.15s ease; }
 .hand-slot .tile { transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease; cursor: pointer; }
