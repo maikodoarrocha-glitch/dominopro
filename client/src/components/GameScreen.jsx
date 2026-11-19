@@ -280,7 +280,7 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
                   <Tile
                     a={t.a}
                     b={t.b}
-                    dir={t.a === t.b ? 'v' : 'h'}
+                    dir="v"
                     size="hand"
                     onClick={() => onHandTile(t)}
                     title={playable ? 'Jogar' : 'Sem encaixe'}
