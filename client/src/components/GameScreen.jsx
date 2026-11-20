@@ -21,6 +21,7 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
   const [drag, setDrag] = useState(null);
+  const [dropSide, setDropSide] = useState(null);
 
   const yourTurn = !!st && st.turn === st.youIndex && st.status === 'playing';
 
@@ -144,6 +145,17 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
       const dy = e.clientY - d.startY;
       if (Math.hypot(dx, dy) > 8) d.moved = true;
       setDrag({ tileId: d.tileId, x: e.clientX, y: e.clientY });
+      // Determina o lado (esquerda/direita) pelo meio da mesa
+      const table = document.querySelector('.table');
+      const rect = table ? table.getBoundingClientRect() : null;
+      const overTable = rect && e.clientX >= rect.left && e.clientX <= rect.right &&
+        e.clientY >= rect.top && e.clientY <= rect.bottom;
+      if (overTable && rect) {
+        const midX = (rect.left + rect.right) / 2;
+        setDropSide(e.clientX < midX ? 'left' : 'right');
+      } else {
+        setDropSide(null);
+      }
     };
     const onUp = (e) => {
       const d = dragRef.current;
@@ -151,6 +163,8 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
       const wasDrag = d.moved;
       dragRef.current = null;
       setDrag(null);
+      const side = dropSide;
+      setDropSide(null);
       if (!wasDrag) return; // toque simples: deixa o onClick cuidar
       suppressClickRef.current = true;
       window.setTimeout(() => { suppressClickRef.current = false; }, 250);
@@ -167,12 +181,14 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
         sound.pass();
         return;
       }
-      if (st.chain.length === 0 || sides.length === 1) {
-        doPlay(tile.id, sides[0]);
-      } else {
-        setPending({ tileId: tile.id, sides });
-        sound.click();
+      if (st.chain.length === 0) {
+        doPlay(tile.id, 'left'); // primeira peça: qualquer lado serve
+        return;
       }
+      // Escolhe o lado onde o usuário soltou; se não couber, usa o outro
+      let chosen = side || sides[0];
+      if (!sides.includes(chosen)) chosen = sides[0];
+      doPlay(tile.id, chosen);
     };
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', onUp);
@@ -273,12 +289,12 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
           </div>
 
           {/* ---------- Mesa ---------- */}
-          <section className={`table ${drag ? 'table-dragging' : ''}`}>
+          <section className={`table ${drag ? (dropSide === 'left' ? 'table-drop-left' : dropSide === 'right' ? 'table-drop-right' : 'table-dragging') : ''}`}>
             <div className="table-frame">
               <div className="table-felt">
                 {st.chain.length === 0 ? (
                   <div className="chain-empty">
-                    <Tile a={6} b={6} dir="v" size="board" className="chain-empty-tile" />
+                    <Tile a={6} b={6} dir="h" size="board" className="chain-empty-tile" />
                     <span>Abra a partida com qualquer peça</span>
                   </div>
                 ) : (
@@ -292,7 +308,7 @@ export default function GameScreen({ onLeave, onToggleMute, muted, toast }) {
                         <Tile
                           a={t.a}
                           b={t.b}
-                          dir={t.a === t.b ? 'v' : 'h'}
+                          dir="h"
                           size="board"
                         />
                       </div>
