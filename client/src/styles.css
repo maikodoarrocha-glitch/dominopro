@@ -822,8 +822,8 @@ button, input { font-family: inherit; }
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 6px;
+  gap: 0px;
+  padding: 4px;
   width: 100%;
   overflow: visible;
 }
